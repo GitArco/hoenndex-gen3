@@ -1,137 +1,102 @@
 <!DOCTYPE html>
 <html lang="it">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>HoennDex - Generazione III</title>
-  <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Monitoraggio Script Python</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      padding: 2rem;
+      background-color: #f0f2f5;
+      color: #333;
+      text-align: center;
+    }
+    .status {
+      font-size: 2rem;
+      margin-top: 1rem;
+      padding: 1rem;
+      border-radius: 8px;
+      display: inline-block;
+      min-width: 250px;
+    }
+    .active {
+      background-color: #d4edda;
+      color: #155724;
+      border: 2px solid #c3e6cb;
+    }
+    .inactive {
+      background-color: #f8d7da;
+      color: #721c24;
+      border: 2px solid #f5c6cb;
+    }
+    .loading {
+      font-size: 1.2rem;
+      color: #666;
+    }
+  </style>
 </head>
-<body class="bg-gray-100 text-gray-800">
-  <header class="bg-blue-600 text-white p-4 shadow flex justify-between items-center">
-    <h1 class="text-2xl font-bold">HoennDex - Gen III</h1>
-  </header>
-  <main class="p-6">
-    <!-- Filtri -->
-    <section class="mb-6">
-      <div class="flex flex-col md:flex-row md:items-center md:space-x-4">
-        <input id="search" type="text" placeholder="Cerca Pokémon" class="border rounded p-2 flex-1 mb-2 md:mb-0" oninput="filterPokemon()">
-        <select id="typeFilter" class="border rounded p-2 mb-2 md:mb-0" onchange="filterPokemon()">
-          <option value="">Filtra per Tipo</option>
-          <option value="Erba">Erba</option>
-          <option value="Fuoco">Fuoco</option>
-          <option value="Acqua">Acqua</option>
-        </select>
-      </div>
-    </section>
+<body>
 
-    <!-- Griglia Starter -->
-    <section>
-      <div id="pokemonGrid" class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-6">
-        <!-- Card Treecko -->
-        <div data-name="Treecko" data-type="Erba" class="bg-white rounded-lg shadow p-4 text-center">
-          <img src="https://img.pokemondb.net/sprites/emerald/normal/treecko.png" alt="Treecko" class="mx-auto mb-2">
-          <h2 class="font-semibold">Treecko</h2>
-          <p class="text-sm text-gray-500">Tipo: Erba</p>
-          <button onclick="showInfo('treecko')" class="mt-2 bg-green-500 text-white py-1 px-3 rounded">Dettagli</button>
-        </div>
-        <!-- Card Torchic -->
-        <div data-name="Torchic" data-type="Fuoco" class="bg-white rounded-lg shadow p-4 text-center">
-          <img src="https://img.pokemondb.net/sprites/emerald/normal/torchic.png" alt="Torchic" class="mx-auto mb-2">
-          <h2 class="font-semibold">Torchic</h2>
-          <p class="text-sm text-gray-500">Tipo: Fuoco</p>
-          <button onclick="showInfo('torchic')" class="mt-2 bg-red-500 text-white py-1 px-3 rounded">Dettagli</button>
-        </div>
-        <!-- Card Mudkip -->
-        <div data-name="Mudkip" data-type="Acqua" class="bg-white rounded-lg shadow p-4 text-center">
-          <img src="https://img.pokemondb.net/sprites/emerald/normal/mudkip.png" alt="Mudkip" class="mx-auto mb-2">
-          <h2 class="font-semibold">Mudkip</h2>
-          <p class="text-sm text-gray-500">Tipo: Acqua</p>
-          <button onclick="showInfo('mudkip')" class="mt-2 bg-blue-500 text-white py-1 px-3 rounded">Dettagli</button>
-        </div>
-      </div>
+  <h1>Monitoraggio Script Python <code>test.py</code></h1>
+  <div id="status" class="loading">Caricamento stato...</div>
 
-      <!-- Info Sections Hidden -->
-      <div id="infoContainer" class="mt-8">
-        <!-- Treecko Info -->
-        <div id="treecko" class="hidden bg-white rounded-lg shadow p-6">
-          <h2 class="text-xl font-bold mb-2">Treecko</h2>
-          <img src="https://img.pokemondb.net/artwork/treecko.jpg" alt="Treecko" class="w-32 mx-auto mb-4">
-          <h3 class="font-semibold">Informazioni</h3>
-          <ul class="list-disc list-inside mb-4">
-            <li>Tipo: Erba</li>
-            <li>Numero Nazionale: 252</li>
-            <li>Abilità: Overgrow</li>
-          </ul>
-          <h3 class="font-semibold">Metodi di Ottenimento</h3>
-          <ul class="list-disc list-inside">
-            <li>Cattura Selvatica: Percorso 101, Grass Patch (5% riporto)</li>
-            <li>Scambio: da FR/LG</li>
-          </ul>
-        </div>
-        <!-- Torchic Info -->
-        <div id="torchic" class="hidden bg-white rounded-lg shadow p-6">
-          <h2 class="text-xl font-bold mb-2">Torchic</h2>
-          <img src="https://img.pokemondb.net/artwork/torchic.jpg" alt="Torchic" class="w-32 mx-auto mb-4">
-          <h3 class="font-semibold">Informazioni</h3>
-          <ul class="list-disc list-inside mb-4">
-            <li>Tipo: Fuoco</li>
-            <li>Numero Nazionale: 255</li>
-            <li>Abilità: Blaze</li>
-          </ul>
-          <h3 class="font-semibold">Metodi di Ottenimento</h3>
-          <ul class="list-disc list-inside">
-            <li>Starter Iniziale: Percorso 101</li>
-            <li>Scambio: da FR/LG</li>
-          </ul>
-        </div>
-        <!-- Mudkip Info -->
-        <div id="mudkip" class="hidden bg-white rounded-lg shadow p-6">
-          <h2 class="text-xl font-bold mb-2">Mudkip</h2>
-          <img src="https://img.pokemondb.net/artwork/mudkip.jpg" alt="Mudkip" class="w-32 mx-auto mb-4">
-          <h3 class="font-semibold">Informazioni</h3>
-          <ul class="list-disc list-inside mb-4">
-            <li>Tipo: Acqua</li>
-            <li>Numero Nazionale: 258</li>
-            <li>Abilità: Torrent</li>
-          </ul>
-          <h3 class="font-semibold">Metodi di Ottenimento</h3>
-          <ul class="list-disc list-inside">
-            <li>Starter Iniziale: Percorso 101</li>
-            <li>Scambio: da FR/LG</li>
-          </ul>
-        </div>
-      </div>
-    </section>
-  </main>
-  <!-- Footer -->
-  <footer class="bg-gray-200 text-center p-4 mt-8">
-    <p class="text-sm">© 2025 HoennDex. Tutti i diritti riservati.</p>
-  </footer>
+  <!-- Firebase SDK -->
+  <script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-database-compat.js"></script>
 
-  <!-- JavaScript per toggle info e filtri -->
   <script>
-    function showInfo(id) {
-      // Nascondi tutte le info
-      document.querySelectorAll('#infoContainer > div').forEach(div => {
-        div.classList.add('hidden');
-      });
-      // Mostra quella selezionata
-      document.getElementById(id).classList.remove('hidden');
-      // Scroll alla sezione info
-      document.getElementById(id).scrollIntoView({ behavior: 'smooth' });
+    // Configurazione Firebase (da te fornita)
+    const firebaseConfig = {
+      apiKey: "AIzaSyD-gK0E_8vH5XKQVMxI8-v4wK44UhA_nZI",
+      authDomain: "monitorscriptremoto.firebaseapp.com",
+      databaseURL: "https://monitorscriptremoto-default-rtdb.europe-west1.firebasedatabase.app",
+      projectId: "monitorscriptremoto",
+      storageBucket: "monitorscriptremoto.firebasestorage.app",
+      messagingSenderId: "880124239105",
+      appId: "1:880124239105:web:e5e0dc905aa2f970380f00",
+      measurementId: "G-SBJ4C3PR44"
+    };
+
+    // Inizializza Firebase
+    firebase.initializeApp(firebaseConfig);
+    const db = firebase.database();
+
+    // Funzione per aggiornare lo stato
+    function updateStatusUI(status) {
+      const statusDiv = document.getElementById("status");
+      if (status === "active") {
+        statusDiv.textContent = "🟢 Script attivo";
+        statusDiv.className = "status active";
+      } else if (status === "inactive") {
+        statusDiv.textContent = "🔴 Script non attivo";
+        statusDiv.className = "status inactive";
+      } else {
+        statusDiv.textContent = "⚠️ Stato sconosciuto";
+        statusDiv.className = "status inactive";
+      }
     }
 
-    function filterPokemon() {
-      const search = document.getElementById('search').value.toLowerCase();
-      const type = document.getElementById('typeFilter').value;
-      document.querySelectorAll('#pokemonGrid > div').forEach(card => {
-        const name = card.getAttribute('data-name').toLowerCase();
-        const cardType = card.getAttribute('data-type');
-        const matchesSearch = name.includes(search);
-        const matchesType = !type || cardType === type;
-        card.style.display = matchesSearch && matchesType ? 'block' : 'none';
-      });
+    // Funzione per leggere lo stato da Firebase
+    function fetchStatus() {
+      db.ref('script_status').get()
+        .then((snapshot) => {
+          if (snapshot.exists()) {
+            const data = snapshot.val();
+            updateStatusUI(data.status);
+          } else {
+            updateStatusUI(null);
+          }
+        })
+        .catch((error) => {
+          console.error("Errore nel recupero dati:", error);
+          updateStatusUI(null);
+        });
     }
+
+    // Primo fetch e poi ogni 5 minuti (300000 ms)
+    fetchStatus();
+    setInterval(fetchStatus, 300000);
   </script>
 </body>
 </html>
