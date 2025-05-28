@@ -1,45 +1,35 @@
 <!DOCTYPE html>
-<html lang="it">
+<html>
 <head>
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Monitoraggio Script Remoto</title>
+  <title>Monitoraggio script remoto</title>
 </head>
 <body>
-  <h1>Stato dello script</h1>
-  <p id="status">Caricamento stato...</p>
+  <h1>Stato Script "test.py"</h1>
+  <ul id="log-list">Caricamento log...</ul>
 
   <script>
-    async function checkScriptStatus() {
-      const statusEl = document.getElementById("status");
+    const dbUrl = "https://monitorscriptremoto-default-rtdb.europe-west1.firebasedatabase.app/script_status_log.json";
 
-      try {
-        statusEl.innerText = "🔄 Verifica in corso...";
+    fetch(dbUrl)
+      .then(response => response.json())
+      .then(data => {
+        const list = document.getElementById("log-list");
+        list.innerHTML = "";
 
-        const response = await fetch("https://monitorscriptremoto-default-rtdb.europe-west1.firebasedatabase.app/script_status.json");
+        const entries = Object.entries(data || {}).sort(([a], [b]) => b.localeCompare(a)).slice(0, 5);
 
-        if (!response.ok) throw new Error("Errore nella risposta");
-
-        const data = await response.json();
-        console.log("Dati ricevuti:", data);
-
-        if (data && data.status === "active") {
-          statusEl.innerText = "✅ Script ATTIVO";
-        } else {
-          statusEl.innerText = "❌ Script NON attivo";
-        }
-
-      } catch (err) {
-        console.error("Errore:", err);
-        statusEl.innerText = "❌ Errore nel recupero stato";
-      }
-    }
-
-    // Avvio al load
-    checkScriptStatus();
-
-    // Refresh ogni 5 minuti
-    setInterval(checkScriptStatus, 5 * 60 * 1000);
+        entries.forEach(([timestamp, record]) => {
+          const li = document.createElement("li");
+          const date = new Date(timestamp);
+          li.textContent = `${date.toLocaleString()} – ${record.status.toUpperCase()}`;
+          list.appendChild(li);
+        });
+      })
+      .catch(error => {
+        document.getElementById("log-list").innerText = "Errore nel caricamento del log.";
+        console.error(error);
+      });
   </script>
 </body>
 </html>
