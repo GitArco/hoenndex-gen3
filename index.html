@@ -17,11 +17,20 @@
         const list = document.getElementById("log-list");
         list.innerHTML = "";
 
-        const entries = Object.entries(data || {}).sort(([a], [b]) => b.localeCompare(a)).slice(0, 5);
+        // Otteniamo le entries, ordiniamo per timestamp interno (record.timestamp) decrescente e prendiamo le ultime 5
+        const entries = Object.values(data || {})
+          .filter(record => record.timestamp && record.status)
+          .sort((a, b) => new Date(b.timestamp) - new Date(a.timestamp))
+          .slice(0, 5);
 
-        entries.forEach(([timestamp, record]) => {
+        if (entries.length === 0) {
+          list.innerHTML = "<li>Nessun dato disponibile</li>";
+          return;
+        }
+
+        entries.forEach(record => {
           const li = document.createElement("li");
-          const date = new Date(timestamp);
+          const date = new Date(record.timestamp);
           li.textContent = `${date.toLocaleString()} – ${record.status.toUpperCase()}`;
           list.appendChild(li);
         });
